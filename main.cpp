@@ -1,6 +1,69 @@
 #include <iostream>
 using namespace std;
 
+const int WEEKS = 10;
+const int DAYS = 7;
+// Historia wagi (kg)
+double weightHistory[WEEKS] = {82.5, 81.2, 81.8, 80.5, 80.1, 79.8, 80.2, 79.5, 78.9, 78.5};
+
+// Dziennik kalorii: [Tydzien][DzienTygodnia]
+int calorieJournal[WEEKS][DAYS]= {
+    {},
+    {},
+    {},
+    {},
+
+};
+string nazwyDni[7] = {"Pon", "Wt", "Sr", "Czw", "Pt", "Sob", "Nd"};
+
+// .md 1
+void runTests() {
+}
+// .md 2.1 Moving average
+double* dataSmoothing(double source[], int dataLength) {
+    double* target = new double[dataLength];
+    for (int i=0; i<dataLength; i++) {
+        if (i==0 || i==dataLength-1) {
+            target[i] = source[i];
+        } else {
+            target[i] = (source[i-1] + source[i] + source[i+1]) / 3.0;
+        }
+    }
+    return target;
+}
+
+// .md 2.2 Weight trends
+int yoyoEffect(double weightData[]) {
+    weightData = dataSmoothing(weightData, WEEKS);
+    int counter = 0;
+    for (int i=0; i<WEEKS; i++) {
+        if (i==0 || i==WEEKS-1) {
+            continue;
+        } if (weightData[i-1] > weightData[i] && weightData[i] < weightData[i+1]) {
+                counter++;
+        }
+    }
+    delete[] weightData;
+    return counter;
+}
+
+
+
 int main() {
-    return 0;
+
+    // 2.1 TESTS
+    // int dataLength = 5;
+    // cout<<"Podaj liczby: "<<endl;
+    // double* example_1 = new double[dataLength];
+    // for (int i=0; i<5; i++) {
+    //     cin>>example_1[i];
+    // }
+    // double* example_2 = new double[dataLength];
+    // dataSmoothing(example_1, example_2, dataLength);
+    // for (int i=0; i<5; i++) {
+    //     cout<<example_2[i]<<" ";
+    // }
+    cout<<yoyoEffect(weightHistory);
+
+    // wyczyścić pamięć!
 }
