@@ -47,6 +47,29 @@ int yoyoEffect(double weightData[]) {
     return counter;
 }
 
+int weightLossStreak(double weightData[]) {
+    int sequence = 0;
+    int max_sequence = 0;
+    int endOfStreak = 0;
+    int startOfStreak = 0;
+    for (int i = 0; i < WEEKS; i++) {
+        if (weightData[i] < weightData[i-1]) {
+            sequence++;
+        } else if (sequence > max_sequence) {
+            max_sequence = sequence;
+            endOfStreak = i;
+            startOfStreak = endOfStreak-sequence;
+            sequence = 0;
+        }
+    }
+    // sprawdzenie wyniku wyswietlanie tygodnia
+    // for (int i = startOfStreak; i < endOfStreak; i++) {
+    //     cout <<"tydzien: "<< i << " waga: " << weightData[i]<< endl;
+    // }
+    return max_sequence;
+
+}
+
 
 
 int main() {
@@ -63,7 +86,11 @@ int main() {
     // for (int i=0; i<5; i++) {
     //     cout<<example_2[i]<<" ";
     // }
-    cout<<yoyoEffect(weightHistory);
 
+    //sprawdzanie yoyo
+    // cout<<yoyoEffect(weightHistory);
+
+    //sprawdzanie streak
+    // cout<<"Najdluzsza passa: "<< weightLossStreak(weightHistory);
     // wyczyścić pamięć!
 }
