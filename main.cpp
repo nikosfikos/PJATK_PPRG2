@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cfloat>
 using namespace std;
 
 const int WEEKS = 10;
@@ -110,7 +111,44 @@ void mostDifficultDay(int calorieData[WEEKS][DAYS], string nazwaDni[] ) {
 }
 
 
-// .md4
+// .md4.1
+
+double skalujPosilek(double makro[3], double limit) {
+    double caloriesSum = (makro[0]*4) + (makro[1]*9) + (makro[2]*4);
+    double rate = 1.0;
+    if (caloriesSum > limit) {
+        rate = (limit / caloriesSum);
+    }
+    for (int i = 0; i < 3; i++) {
+        makro[i] = makro[i] * rate;
+        cout << makro[i] << endl;
+    }
+
+    return rate;
+}
+
+
+// .md 4.2
+void raportGenerator(double wyniki[3]) {
+    wyniki[0] = DBL_MAX;
+    wyniki[1] = DBL_MAX;
+    wyniki[2] = DBL_MAX;
+    // przesuniecia - nowa wartosc jest najmniejsza
+        for (int i = 0; i < WEEKS; i++) {
+            for (int j = 0; j < DAYS; j++) {
+                if (calorieJournal[i][j] < wyniki[0]) {
+                    wyniki[2] = wyniki[1];
+                    wyniki[1] = wyniki[0];
+                    wyniki[0] = calorieJournal[i][j];
+                } else if (calorieJournal[i][j] < wyniki[1]){
+                    wyniki[2] = wyniki[1];
+                    wyniki[1] = calorieJournal[i][j];
+                } else if (calorieJournal[i][j] < wyniki[2]) {
+                    wyniki[2] = calorieJournal[i][j];
+                }
+            }
+        }
+}
 
 
 int main() {
@@ -135,10 +173,19 @@ int main() {
     // cout<<"Najdluzsza passa: "<< weightLossStreak(weightHistory);
 
     //sprawdzanie najtrudniejszy dzien
-    mostDifficultDay(calorieJournal,nazwyDni);
+    // mostDifficultDay(calorieJournal,nazwyDni);
 
+    //sprawdzanie makro
+    // double* makro = new double[3];
+    // makro[0] = 50.0;
+    // makro[1] = 30.0;
+    // makro[2] = 80.0;
+    // skalujPosilek(makro, 500);
+    //
 
-
+    // generowanie raportu
+    double* result = new double[3];
+    raportGenerator(result);
 
     // wyczyścić pamięć!
 }

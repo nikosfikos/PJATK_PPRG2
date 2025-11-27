@@ -63,11 +63,17 @@ To uczy łączenia danych z dwóch różnych tablic.
 
 ### 4.1 Normalizacja Makro (5 pkt)
 
-Napisz funkcję skalujPosilek(double makro[3], double limit). Jeśli suma kalorii (B*4 + T*9 + W*4) przekracza limit, proporcjonalnie zmniejsz ilość białka, tłuszczu i węglowodanów, aby idealnie trafić w limit.
+Napisz funkcję skalujPosilek(double makro[3], double limit).
+Jeśli suma kalorii (B*4 + T*9 + W*4) przekracza limit, 
+proporcjonalnie zmniejsz ilość białka, tłuszczu i węglowodanów, aby idealnie trafić w limit.
+
 ### 4.2 Metoda 3: Generowanie Raportu (6 pkt)
 
 Transformacja tablic.
-Zadanie: Stwórz funkcję, która nie wyświetla danych, ale wypełnia przekazaną jej pustą tablicę wyniki[3] trzema największymi deficytami kalorycznymi (wymaga przeszukania danych i znalezienia Top 3 wartości).
+Zadanie: Stwórz funkcję, która nie wyświetla danych,
+ale wypełnia przekazaną jej pustą tablicę wyniki[3]
+trzema największymi deficytami kalorycznymi 
+(wymaga przeszukania danych i znalezienia Top 3 wartości).
 
 int main() {
 uruchomTesty(); // Najpierw testy!
