@@ -4,6 +4,10 @@
 #include <chrono>
 using namespace std;
 
+//TODO 1
+//Zadeklaruj poniższe tablice jako globalne (przed main).
+//Funkcje będą na nich operować lub przyjmować je jako argumenty do testów.
+
 const int WEEKS = 10;
 const int DAYS = 7;
 const int KCAL_PROTEINS = 4;
