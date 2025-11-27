@@ -1,9 +1,15 @@
 #include <iostream>
 #include <cfloat>
+#include <thread>
+#include <chrono>
 using namespace std;
 
 const int WEEKS = 10;
 const int DAYS = 7;
+const int KCAL_PROTEINS = 4;
+const int KCAL_CARBOHYDRATES = 9;
+const int KCAL_FATS = 4;
+
 // Historia wagi (kg)
 double weightHistory[WEEKS] = {82.5, 81.2, 81.8, 80.5, 80.1, 79.8, 80.2, 79.5, 78.9, 78.5};
 
@@ -23,9 +29,8 @@ int calorieJournal[WEEKS][DAYS]= {
 };
 string nazwyDni[7] = {"Pon", "Wt", "Sr", "Czw", "Pt", "Sob", "Nd"};
 
-// .md 1
-void runTests() {
-}
+
+
 // .md 2.1 Moving average
 double* dataSmoothing(double source[], int dataLength) {
     double* target = new double[dataLength];
@@ -42,16 +47,19 @@ double* dataSmoothing(double source[], int dataLength) {
 
 // .md 2.2 Weight trends
 int yoyoEffect(double weightData[]) {
-    weightData = dataSmoothing(weightData, WEEKS);
+    double* smoothWeightData = dataSmoothing(weightData, WEEKS);
     int counter = 0;
     for (int i=0; i<WEEKS; i++) {
         if (i==0 || i==WEEKS-1) {
             continue;
-        } if (weightData[i-1] > weightData[i] && weightData[i] < weightData[i+1]) {
-                counter++;
         }
+        if (smoothWeightData[i-1] > smoothWeightData[i]) {
+            if (smoothWeightData[i+1] > smoothWeightData[i]) {
+                counter++;
+                }
+            }
     }
-    delete[] weightData;
+    delete[] smoothWeightData;
     return counter;
 }
 
@@ -60,20 +68,21 @@ int weightLossStreak(double weightData[]) {
     int max_sequence = 0;
     int endOfStreak = 0;
     int startOfStreak = 0;
-    for (int i = 0; i < WEEKS; i++) {
+    for (int i = 1; i< WEEKS; i++) {
         if (weightData[i] < weightData[i-1]) {
             sequence++;
-        } else if (sequence > max_sequence) {
-            max_sequence = sequence;
+        } else {
+            if (sequence > max_sequence) {
+                max_sequence = sequence;
+            }
             endOfStreak = i;
             startOfStreak = endOfStreak-sequence;
             sequence = 0;
         }
     }
-    // sprawdzenie wyniku wyswietlanie tygodnia
-    // for (int i = startOfStreak; i < endOfStreak; i++) {
-    //     cout <<"tydzien: "<< i << " waga: " << weightData[i]<< endl;
-    // }
+    if (sequence > max_sequence) {
+        max_sequence = sequence;
+    }
     return max_sequence;
 }
 
@@ -81,20 +90,15 @@ int weightLossStreak(double weightData[]) {
 // .md 3
 void mostDifficultDay(int calorieData[WEEKS][DAYS], string nazwaDni[] ) {
     //indeks tablicy nazwadni
-    int counter = 0;
     double* calorieJournalAvg = new double[DAYS];
 
-    while (counter < DAYS) {
-        for (int i=0; i < WEEKS; i++){
-            for (int j = 0; j < DAYS; j++) {
-                if (j==counter) {
-                    calorieJournalAvg[counter] += calorieData[i][j];
-                }
+    for (int dzien = 0; dzien < DAYS; dzien++) {
+        int sum = 0;
+        for (int tydzien=0; tydzien < WEEKS; tydzien++){
+                sum += calorieData[tydzien][dzien];
             }
+        calorieJournalAvg[dzien] = sum / WEEKS;
         }
-        calorieJournalAvg[counter] = static_cast<double>(calorieJournalAvg[counter]) / static_cast<double>(WEEKS) ;
-        counter++;
-    }
 
     double greatestAvg = calorieJournalAvg[0];
     string result = nazwaDni[0];
@@ -114,14 +118,13 @@ void mostDifficultDay(int calorieData[WEEKS][DAYS], string nazwaDni[] ) {
 // .md4.1
 
 double skalujPosilek(double makro[3], double limit) {
-    double caloriesSum = (makro[0]*4) + (makro[1]*9) + (makro[2]*4);
+    double caloriesSum = (makro[0]*KCAL_PROTEINS) + (makro[1]*KCAL_CARBOHYDRATES) + (makro[2]*KCAL_FATS);
     double rate = 1.0;
     if (caloriesSum > limit) {
         rate = (limit / caloriesSum);
     }
     for (int i = 0; i < 3; i++) {
         makro[i] = makro[i] * rate;
-        cout << makro[i] << endl;
     }
 
     return rate;
@@ -151,41 +154,53 @@ void raportGenerator(double wyniki[3]) {
 }
 
 
+// .md 1
+void runTests() {
+    cout<<"Running tests...\n";
+    cout<<"["<<flush;
+    double dataSmoothingSample[5] = {10,20,30,40,50};
+    double* result = dataSmoothing(dataSmoothingSample, 5);
+    for (int i = 1; i <= 3; i++) {
+        cout<<'#' << flush;
+        this_thread::sleep_for(chrono::milliseconds(200));
+    }
+    double yoyoEffectSample[5] = {100,90,95,90,85};
+
+    for (int i = 1; i <= 3; i++) {
+        cout<<'#' << flush;
+        this_thread::sleep_for(chrono::milliseconds(200));
+    }
+    double weightLossStreakSample[5] = {100,99,98,97,101};
+    for (int i = 1; i <= 4; i++) {
+        cout<<'#' << flush;
+        this_thread::sleep_for(chrono::milliseconds(200));
+    }
+    cout<<"]"<<endl<<flush;
+    if (result[1] == 20) {
+        cout<<"Data Smoothing STATUS: OK\n";
+        this_thread::sleep_for(chrono::milliseconds(200));
+    } else {
+        cout<<"Data Smoothing STATUS: NOT OK\n";
+    }
+    if (yoyoEffect(yoyoEffectSample) == 1) {
+        cout<<"YoYo effect STATUS: OK\n";
+        this_thread::sleep_for(chrono::milliseconds(200));
+    } else {
+        cout<<"Yoy effect STATUS: NOT OK\n";
+    }
+    if (weightLossStreak(weightLossStreakSample) == 3 ) {
+        cout<<"Weight Loss Streak STATUS: OK\n";
+    } else {
+        cout<<"Weight Loss Streak STATUS: NOT OK\n";
+    }
+    delete[] result;
+}
+
 int main() {
 
-    // 2.1 TESTS
-    // int dataLength = 5;
-    // cout<<"Podaj liczby: "<<endl;
-    // double* example_1 = new double[dataLength];
-    // for (int i=0; i<5; i++) {
-    //     cin>>example_1[i];
-    // }
-    // double* example_2 = new double[dataLength];
-    // dataSmoothing(example_1, example_2, dataLength);
-    // for (int i=0; i<5; i++) {
-    //     cout<<example_2[i]<<" ";
-    // }
+    runTests();
+    
+    return 0;
 
-    //sprawdzanie yoyo
-    // cout<<yoyoEffect(weightHistory);
 
-    //sprawdzanie streak
-    // cout<<"Najdluzsza passa: "<< weightLossStreak(weightHistory);
-
-    //sprawdzanie najtrudniejszy dzien
-    // mostDifficultDay(calorieJournal,nazwyDni);
-
-    //sprawdzanie makro
-    // double* makro = new double[3];
-    // makro[0] = 50.0;
-    // makro[1] = 30.0;
-    // makro[2] = 80.0;
-    // skalujPosilek(makro, 500);
-    //
-
-    // generowanie raportu
-    double* result = new double[3];
-    raportGenerator(result);
-
-    // wyczyścić pamięć!
 }
