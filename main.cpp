@@ -4,15 +4,11 @@
 #include <chrono>
 using namespace std;
 
-//TODO 1
-//Zadeklaruj poniższe tablice jako globalne (przed main).
-//Funkcje będą na nich operować lub przyjmować je jako argumenty do testów.
-
-const int WEEKS = 10;
-const int DAYS = 7;
-const int KCAL_PROTEINS = 4;
-const int KCAL_CARBOHYDRATES = 9;
-const int KCAL_FATS = 4;
+constexpr int WEEKS = 10;
+constexpr int DAYS = 7;
+constexpr int KCAL_PROTEINS = 4;
+constexpr int KCAL_CARBOHYDRATES = 9;
+constexpr int KCAL_FATS = 4;
 
 // Historia wagi (kg)
 double weightHistory[WEEKS] = {82.5, 81.2, 81.8, 80.5, 80.1, 79.8, 80.2, 79.5, 78.9, 78.5};
@@ -37,6 +33,9 @@ string nazwyDni[7] = {"Pon", "Wt", "Sr", "Czw", "Pt", "Sob", "Nd"};
 
 // .md 2.1 Moving average
 double* dataSmoothing(double source[], int dataLength) {
+    if (dataLength < 2) {
+        return source;
+    }
     double* target = new double[dataLength];
     for (int i=0; i<dataLength; i++) {
         if (i==0 || i==dataLength-1) {
@@ -50,11 +49,14 @@ double* dataSmoothing(double source[], int dataLength) {
 
 
 // .md 2.2 Weight trends
-int yoyoEffect(double weightData[]) {
-    double* smoothWeightData = dataSmoothing(weightData, WEEKS);
+int yoyoEffect(double weightData[], int dataLength) {
+    if (dataLength < 3) {
+        return 0;
+    }
+    double* smoothWeightData = dataSmoothing(weightData, dataLength);
     int counter = 0;
-    for (int i=0; i<WEEKS; i++) {
-        if (i==0 || i==WEEKS-1) {
+    for (int i=0; i<dataLength; i++) {
+        if (i==0 || i==dataLength-1) {
             continue;
         }
         if (smoothWeightData[i-1] > smoothWeightData[i]) {
@@ -67,12 +69,15 @@ int yoyoEffect(double weightData[]) {
     return counter;
 }
 
-int weightLossStreak(double weightData[]) {
+int weightLossStreak(double weightData[], int dataLength) {
+    if (dataLength < 2) {
+        return 0;
+    }
     int sequence = 0;
     int max_sequence = 0;
     int endOfStreak = 0;
     int startOfStreak = 0;
-    for (int i = 1; i< WEEKS; i++) {
+    for (int i = 1; i< dataLength; i++) {
         if (weightData[i] < weightData[i-1]) {
             sequence++;
         } else {
@@ -97,7 +102,7 @@ void mostDifficultDay(int calorieData[WEEKS][DAYS], string nazwaDni[] ) {
     double* calorieJournalAvg = new double[DAYS];
 
     for (int dzien = 0; dzien < DAYS; dzien++) {
-        int sum = 0;
+        double sum = 0.0;
         for (int tydzien=0; tydzien < WEEKS; tydzien++){
                 sum += calorieData[tydzien][dzien];
             }
@@ -140,7 +145,7 @@ void raportGenerator(double wyniki[3]) {
     wyniki[0] = DBL_MAX;
     wyniki[1] = DBL_MAX;
     wyniki[2] = DBL_MAX;
-    // przesuniecia - nowa wartosc jest najmniejsza
+    // Linear search extended to 3 values, new value
         for (int i = 0; i < WEEKS; i++) {
             for (int j = 0; j < DAYS; j++) {
                 if (calorieJournal[i][j] < wyniki[0]) {
@@ -159,11 +164,12 @@ void raportGenerator(double wyniki[3]) {
 
 
 // .md 1
-void runTests() {
+void uruchomTesty() {
     cout<<"Running tests...\n";
     cout<<"["<<flush;
     double dataSmoothingSample[5] = {10,20,30,40,50};
-    double* result = dataSmoothing(dataSmoothingSample, 5);
+    double* result = dataSmoothing(dataSmoothingSample,
+        sizeof(dataSmoothingSample));
     for (int i = 1; i <= 3; i++) {
         cout<<'#' << flush;
         this_thread::sleep_for(chrono::milliseconds(200));
@@ -186,13 +192,13 @@ void runTests() {
     } else {
         cout<<"Data Smoothing STATUS: NOT OK\n";
     }
-    if (yoyoEffect(yoyoEffectSample) == 1) {
+    if (yoyoEffect(yoyoEffectSample, sizeof(yoyoEffectSample)) == 1) {
         cout<<"YoYo effect STATUS: OK\n";
         this_thread::sleep_for(chrono::milliseconds(200));
     } else {
         cout<<"Yoy effect STATUS: NOT OK\n";
     }
-    if (weightLossStreak(weightLossStreakSample) == 3 ) {
+    if (weightLossStreak(weightLossStreakSample,sizeof(weightLossStreakSample)) == 3 ) {
         cout<<"Weight Loss Streak STATUS: OK\n";
     } else {
         cout<<"Weight Loss Streak STATUS: NOT OK\n";
@@ -200,10 +206,40 @@ void runTests() {
     delete[] result;
 }
 
+void displayResults() {
+    double makro[3] = {50, 30, 80};
+    double wyniki[3] = {};
+    double* smoothData = dataSmoothing(weightHistory, WEEKS);
+    cout<<"2. Analyzing data..."<<endl;
+    this_thread::sleep_for(chrono::milliseconds(500));
+    cout<<"2.1 New array filled with moving average: ";
+    for (int i = 0; i < WEEKS; i++) {
+        cout<<smoothData[i]<<" ";
+    }
+    cout<<"\n";
+    this_thread::sleep_for(chrono::milliseconds(200));
+    cout<<"2.2 YoYo effect: "<<yoyoEffect(weightHistory, sizeof(weightHistory))<<" | 2.2 Weight loss streak: "<<
+        weightLossStreak(weightHistory,sizeof(weightHistory)) <<endl;
+    this_thread::sleep_for(chrono::milliseconds(200));
+    mostDifficultDay(calorieJournal, nazwyDni);
+    this_thread::sleep_for(chrono::milliseconds(200));
+    cout<<"4.1 Macro normalization: "<<skalujPosilek(makro,500);
+    this_thread::sleep_for(chrono::milliseconds(200));
+    cout<<"\n";
+    cout<<"4.2 Top 3 values of greatest calorie deficit : ";
+    raportGenerator(wyniki);
+    for (double wynik : wyniki) {
+        cout<<wynik<<" ";
+    }
+    delete[] smoothData;
+}
+
 int main() {
 
-    runTests();
-    
+    uruchomTesty();
+    displayResults();
+
+
     return 0;
 
 

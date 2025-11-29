@@ -53,7 +53,8 @@ Musisz użyć pętli i pamiętać o resetowaniu licznika serii.
 ## 3. Metoda 2: "Najtrudniejszy Dzień" (6 pkt)
 
 Analiza 2D w pionie + Mapowanie.
-Zadanie: Znajdź dzień tygodnia (np. "Sobota"), w którym średnie spożycie kalorii ze wszystkich tygodni jest najwyższe.
+Zadanie: Znajdź dzień tygodnia (np. "Sobota"), 
+w którym średnie spożycie kalorii ze wszystkich tygodni jest najwyższe.
 Komplikacja: Student musi zsumować kolumny macierzy kalorie, 
 znaleźć indeks maksimum (np. 5), a następnie użyć tego indeksu,
 by wyciągnąć nazwę dnia z tablicy dniTygodnia.
