@@ -38,6 +38,7 @@ double* dataSmoothing(double source[], int dataLength) {
     }
     double* target = new double[dataLength];
     for (int i=0; i<dataLength; i++) {
+        // edge cases
         if (i==0 || i==dataLength-1) {
             target[i] = source[i];
         } else {
@@ -169,7 +170,7 @@ void uruchomTesty() {
     cout<<"["<<flush;
     double dataSmoothingSample[5] = {10,20,30,40,50};
     double* result = dataSmoothing(dataSmoothingSample,
-        sizeof(dataSmoothingSample));
+        sizeof(dataSmoothingSample) / sizeof(double));
     for (int i = 1; i <= 3; i++) {
         cout<<'#' << flush;
         this_thread::sleep_for(chrono::milliseconds(200));
@@ -192,13 +193,13 @@ void uruchomTesty() {
     } else {
         cout<<"Data Smoothing STATUS: NOT OK\n";
     }
-    if (yoyoEffect(yoyoEffectSample, sizeof(yoyoEffectSample)) == 1) {
+    if (yoyoEffect(yoyoEffectSample, sizeof(yoyoEffectSample) / sizeof(double)) == 1) {
         cout<<"YoYo effect STATUS: OK\n";
         this_thread::sleep_for(chrono::milliseconds(200));
     } else {
         cout<<"Yoy effect STATUS: NOT OK\n";
     }
-    if (weightLossStreak(weightLossStreakSample,sizeof(weightLossStreakSample)) == 3 ) {
+    if (weightLossStreak(weightLossStreakSample,sizeof(weightLossStreakSample) / sizeof(double)) == 3 ) {
         cout<<"Weight Loss Streak STATUS: OK\n";
     } else {
         cout<<"Weight Loss Streak STATUS: NOT OK\n";
@@ -218,8 +219,9 @@ void displayResults() {
     }
     cout<<"\n";
     this_thread::sleep_for(chrono::milliseconds(200));
-    cout<<"2.2 YoYo effect: "<<yoyoEffect(weightHistory, sizeof(weightHistory))<<" | 2.2 Weight loss streak: "<<
-        weightLossStreak(weightHistory,sizeof(weightHistory)) <<endl;
+    cout << "2.2 YoYo effect: " << yoyoEffect(weightHistory, sizeof(weightHistory) / sizeof(double)) <<
+            " | 2.2 Weight loss streak: " <<
+        weightLossStreak(weightHistory,sizeof(weightHistory) / sizeof(double)) <<endl;
     this_thread::sleep_for(chrono::milliseconds(200));
     mostDifficultDay(calorieJournal, nazwyDni);
     this_thread::sleep_for(chrono::milliseconds(200));
@@ -235,10 +237,8 @@ void displayResults() {
 }
 
 int main() {
-
     uruchomTesty();
     displayResults();
-
 
     return 0;
 
