@@ -262,7 +262,7 @@ void uruchomTesty() {
 }
 
 void displayResults() {
-    double makro[3] = {50, 30, 80};
+    double makro[3] = {100, 50, 150};
     double wyniki[3] = {};
     double* smoothData = dataSmoothing(weightHistory, WEEKS);
     dayInfo toughestDay = mostDifficultDay(calorieJournal, WEEKS, nazwyDni);
@@ -281,12 +281,16 @@ void displayResults() {
     cout<<" | 2.2 Weight loss streak: "<< weightLossStreak(weightHistory,sizeof(weightHistory) / sizeof(double)) <<endl;
     this_thread::sleep_for(chrono::milliseconds(200));
 
-        cout<<"3. Most difficult day: "<<toughestDay.dayName<<" with average calories intake: "<<toughestDay.avgCalorieIntake<<endl;
+    cout<<"3. Most difficult day: "<<toughestDay.dayName<<" with average calories intake: "
+    <<toughestDay.avgCalorieIntake<<endl;
 
 
     this_thread::sleep_for(chrono::milliseconds(200));
 
-    cout<<"4.1 Macro normalization: "<<skalujPosilek(makro,1100);
+    double rate = skalujPosilek(makro,1100);
+    cout<<"4.1 Macro normalization: "<<"Proteins: "<<makro[0]<<" Fats: "<<makro[1]<<" Carbohydrates: "<<makro[2]
+    <<" (rate: "<<rate<<")";
+
     this_thread::sleep_for(chrono::milliseconds(200));
     cout<<"\n";
 
